@@ -15,8 +15,8 @@ final class AudioEngine: ObservableObject {
     // MARK: - AudioKit nodes
     private let engine = AudioKit.AudioEngine()
     private var mic: AudioKit.AudioEngine.InputNode?
-    private var pitchTap: AudioKitEX.PitchTap?
-    private var oscillator: AudioKitEX.DynamicOscillator?
+    private var pitchTap: PitchTap?
+    private var oscillator: DynamicOscillator?
     private var mixer: AudioKit.Mixer?
 
     // MARK: - Playback coordination
@@ -35,7 +35,7 @@ final class AudioEngine: ObservableObject {
         }
         mic = inputNode
 
-        let osc = AudioKitEX.DynamicOscillator()
+        let osc = DynamicOscillator()
         osc.amplitude = 0
         oscillator = osc
 
@@ -43,7 +43,7 @@ final class AudioEngine: ObservableObject {
         mixer = mix
         engine.output = mix
 
-        pitchTap = AudioKitEX.PitchTap(inputNode) { [weak self] (freq: [Float], amp: [Float]) in
+        pitchTap = PitchTap(inputNode) { [weak self] freq, amp in
             Task { @MainActor [weak self] in
                 guard let self,
                       let amplitude = amp.first,
