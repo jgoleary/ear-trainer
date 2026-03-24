@@ -118,9 +118,9 @@ After all 10 exercises, the lesson score screen shows:
 
 **Vibrato handling:** For each note, pitch samples are collected across the note's beat window. The first ~50ms (attack) and last ~30ms (release) are discarded. The remaining samples are averaged to produce a stable fundamental estimate that smooths out vibrato wobble.
 
-**Amplitude threshold:** Samples below a configurable amplitude floor are ignored, preventing false readings from ambient noise.
+**Amplitude threshold:** Samples below a configurable amplitude floor are ignored, preventing false readings from ambient noise. Default starting value: `0.1` (on AudioKit's 0.0–1.0 scale); exposed as a tunable constant for adjustment during testing.
 
-**Timing:** The beat grid determines each note's sample window. Note duration in beats × (60 / BPM) = window in seconds.
+**Timing:** The beat grid determines each note's sample window. Note duration in beats × (60 / BPM) = window in seconds. If the singer sings late and the early portion of the window is silent, those silent samples are discarded (below the amplitude threshold) and do not count toward the average — only the samples with detected pitch are averaged. This naturally handles late attacks without penalizing the singer for the silence itself; the note score is based purely on the pitched samples captured within the window.
 
 ---
 
@@ -166,7 +166,7 @@ Based on average phrase score across all 10 exercises:
 | 50–74% | ⭐ |
 | <50% | 0 (no unlock) |
 
-**3 stars required** to unlock the next lesson. Best star score per lesson is persisted via `UserDefaults`.
+**3 stars required** to unlock the next lesson. Unlock is evaluated and applied immediately on the lesson-end screen — the next lesson becomes available as soon as the screen is shown. Best star score per lesson is persisted via `UserDefaults`.
 
 ---
 
@@ -190,6 +190,8 @@ Based on average phrase score across all 10 exercises:
 ---
 
 ## Staff Display
+
+Rendered using a custom SwiftUI `Canvas` view (no third-party notation library).
 
 - Treble clef, C major (no key signature).
 - Notes displayed horizontally left-to-right.
