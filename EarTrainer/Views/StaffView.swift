@@ -26,7 +26,7 @@ struct StaffView: View {
     private var canvasHeight: CGFloat {
         // above staff: result indicators (30) + space (10)
         // staff: 4 × lineSpacing = 40
-        // below staff: ledger line zone (30) + solfege (20)
+        // below staff: ledger line zone (40) + solfege (20)
         return 40 + 4 * lineSpacing + 60
     }
 
@@ -39,7 +39,7 @@ struct StaffView: View {
     }
 
     private func slotForMIDI(_ midi: Int) -> Int {
-        // E4 = MIDI 64 = slot 0; each semitone maps to chromatic slot
+        // E4 = MIDI 64 = slot 0; diatonic C-major pitches only (chromatic notes unsupported)
         let slotMap: [Int: Int] = [60: -2, 62: -1, 64: 0, 65: 1, 67: 2, 69: 3, 71: 4, 72: 5]
         return slotMap[midi] ?? 0
     }
@@ -131,9 +131,9 @@ struct StaffView: View {
         case .onPitch:       return .green
         case .sharp(let c), .flat(let c):
             switch abs(c) {
-            case 0...50:    return .yellow
-            case 51...100:  return .orange
-            default:        return .red
+            case ..<51:    return .yellow
+            case ..<101:   return .orange
+            default:       return .red
             }
         case .undetected:    return .gray
         }
