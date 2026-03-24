@@ -1,5 +1,7 @@
+import Foundation
 import AudioKit
 import AudioKitEX
+import SoundpipeAudioKit
 import AVFoundation
 
 @MainActor
@@ -13,9 +15,9 @@ final class AudioEngine: ObservableObject {
     // MARK: - AudioKit nodes
     private let engine = AudioKit.AudioEngine()
     private var mic: AudioKit.AudioEngine.InputNode?
-    private var pitchTap: PitchTap?
-    private var oscillator: DynamicOscillator?
-    private var mixer: Mixer?
+    private var pitchTap: AudioKitEX.PitchTap?
+    private var oscillator: AudioKitEX.DynamicOscillator?
+    private var mixer: AudioKit.Mixer?
 
     // MARK: - Playback coordination
     private var pitchSilenceTask: Task<Void, Never>?
@@ -33,15 +35,15 @@ final class AudioEngine: ObservableObject {
         }
         mic = inputNode
 
-        let osc = DynamicOscillator()
+        let osc = AudioKitEX.DynamicOscillator()
         osc.amplitude = 0
         oscillator = osc
 
-        let mix = Mixer(inputNode, osc)
+        let mix = AudioKit.Mixer(inputNode, osc)
         mixer = mix
         engine.output = mix
 
-        pitchTap = PitchTap(inputNode) { [weak self] freq, amp in
+        pitchTap = AudioKitEX.PitchTap(inputNode) { [weak self] (freq: [Float], amp: [Float]) in
             Task { @MainActor [weak self] in
                 guard let self,
                       let amplitude = amp.first,
