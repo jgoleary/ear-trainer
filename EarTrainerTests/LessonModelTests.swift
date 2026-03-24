@@ -47,7 +47,8 @@ final class LessonModelTests: XCTestCase {
         XCTAssertEqual(ids.count, Set(ids).count)
     }
 
-    func test_lesson1_hasID_lesson01() {
+    func test_lesson1_isUnlocked_byDefault() {
+        // Lesson 1 always has id "lesson-01" — ProgressStore uses this to seed the initial unlock
         XCTAssertEqual(LessonCurriculum.all[0].id, "lesson-01")
     }
 }
