@@ -1,0 +1,530 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2EFED121E939A5AAD2572A70 /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = 05405D409401F6A9EA4C99DE /* AudioKit */; };
+		3C05C3848D13CC5CCCBF3759 /* AudioKitEX in Frameworks */ = {isa = PBXBuildFile; productRef = 844C613E86EF636D065F5F68 /* AudioKitEX */; };
+		7C18C2582383A7D75F7BE60D /* EarTrainerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092CACA71CE4CB57ED330705 /* EarTrainerApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1DD4F264BB14B48C0C58C757 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94AE22CD8F6E558EC3FD290A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9B0BBE5D6408CB5383777D9B;
+			remoteInfo = EarTrainer;
+		};
+		53D550DF31C118B090B8D223 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94AE22CD8F6E558EC3FD290A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9B0BBE5D6408CB5383777D9B;
+			remoteInfo = EarTrainer;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		092CACA71CE4CB57ED330705 /* EarTrainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarTrainerApp.swift; sourceTree = "<group>"; };
+		44056122DAB81736B4F7C9CA /* EarTrainerUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = EarTrainerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6AC0545666D003D463CA4914 /* EarTrainerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = EarTrainerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B78A8AA70EB9EAA0A57C21EB /* EarTrainer.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = EarTrainer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD5507CF8731839A8B598A37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		339ADA12ACA0E46B360E6081 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2EFED121E939A5AAD2572A70 /* AudioKit in Frameworks */,
+				3C05C3848D13CC5CCCBF3759 /* AudioKitEX in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0F2A7E97FA2627D6029F6B5E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B78A8AA70EB9EAA0A57C21EB /* EarTrainer.app */,
+				6AC0545666D003D463CA4914 /* EarTrainerTests.xctest */,
+				44056122DAB81736B4F7C9CA /* EarTrainerUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		63908774051740BAFC5D7CB6 /* EarTrainerTests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = EarTrainerTests;
+			sourceTree = "<group>";
+		};
+		64323789748331663EC7A8DD /* App */ = {
+			isa = PBXGroup;
+			children = (
+				092CACA71CE4CB57ED330705 /* EarTrainerApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		6C0FA0859597D68C7DD6FF03 /* EarTrainer */ = {
+			isa = PBXGroup;
+			children = (
+				CD5507CF8731839A8B598A37 /* Info.plist */,
+				64323789748331663EC7A8DD /* App */,
+			);
+			path = EarTrainer;
+			sourceTree = "<group>";
+		};
+		775CD4A7E9E1F0FB7992E922 /* EarTrainerUITests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = EarTrainerUITests;
+			sourceTree = "<group>";
+		};
+		CF7DC52E9733E00C1534DCDA = {
+			isa = PBXGroup;
+			children = (
+				6C0FA0859597D68C7DD6FF03 /* EarTrainer */,
+				63908774051740BAFC5D7CB6 /* EarTrainerTests */,
+				775CD4A7E9E1F0FB7992E922 /* EarTrainerUITests */,
+				0F2A7E97FA2627D6029F6B5E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9B0BBE5D6408CB5383777D9B /* EarTrainer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B398C2DA46EC5E2A3D7762ED /* Build configuration list for PBXNativeTarget "EarTrainer" */;
+			buildPhases = (
+				72EC4629784CF062CC2E94C5 /* Sources */,
+				339ADA12ACA0E46B360E6081 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EarTrainer;
+			packageProductDependencies = (
+				05405D409401F6A9EA4C99DE /* AudioKit */,
+				844C613E86EF636D065F5F68 /* AudioKitEX */,
+			);
+			productName = EarTrainer;
+			productReference = B78A8AA70EB9EAA0A57C21EB /* EarTrainer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A36B1BB1A8F568E3BB07EA93 /* EarTrainerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1D5558CD4E59084DC712A1F /* Build configuration list for PBXNativeTarget "EarTrainerTests" */;
+			buildPhases = (
+				44E66EFB4FA673D77185898D /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				44DEB3836E1705796EC4140D /* PBXTargetDependency */,
+			);
+			name = EarTrainerTests;
+			packageProductDependencies = (
+			);
+			productName = EarTrainerTests;
+			productReference = 6AC0545666D003D463CA4914 /* EarTrainerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D8AE6B4866B4F4B876FFE63D /* EarTrainerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5CA7E34879E1983AC9FE5B68 /* Build configuration list for PBXNativeTarget "EarTrainerUITests" */;
+			buildPhases = (
+				255331C1E7CDE3F79DA8ED83 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				32C8F645065112AEC77BB114 /* PBXTargetDependency */,
+			);
+			name = EarTrainerUITests;
+			packageProductDependencies = (
+			);
+			productName = EarTrainerUITests;
+			productReference = 44056122DAB81736B4F7C9CA /* EarTrainerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		94AE22CD8F6E558EC3FD290A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					D8AE6B4866B4F4B876FFE63D = {
+						TestTargetID = 9B0BBE5D6408CB5383777D9B;
+					};
+				};
+			};
+			buildConfigurationList = 4BA3506F0FB5EA510208692B /* Build configuration list for PBXProject "EarTrainer" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = CF7DC52E9733E00C1534DCDA;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AEC8EA4E88A0E786C2B5415A /* XCRemoteSwiftPackageReference "AudioKit" */,
+				4DF6E812168D5476E9E3392A /* XCRemoteSwiftPackageReference "AudioKitEX" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 0F2A7E97FA2627D6029F6B5E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9B0BBE5D6408CB5383777D9B /* EarTrainer */,
+				A36B1BB1A8F568E3BB07EA93 /* EarTrainerTests */,
+				D8AE6B4866B4F4B876FFE63D /* EarTrainerUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		255331C1E7CDE3F79DA8ED83 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		44E66EFB4FA673D77185898D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		72EC4629784CF062CC2E94C5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7C18C2582383A7D75F7BE60D /* EarTrainerApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		32C8F645065112AEC77BB114 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9B0BBE5D6408CB5383777D9B /* EarTrainer */;
+			targetProxy = 53D550DF31C118B090B8D223 /* PBXContainerItemProxy */;
+		};
+		44DEB3836E1705796EC4140D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9B0BBE5D6408CB5383777D9B /* EarTrainer */;
+			targetProxy = 1DD4F264BB14B48C0C58C757 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		33E8C632974BD92858B96CDA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		4CF8AD4FF8C33594B84B45C6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.eartrainer.EarTrainerUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = EarTrainer;
+			};
+			name = Release;
+		};
+		717CF372A66D0F8C55193E4C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = EarTrainer/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.eartrainer.EarTrainer;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8FBA2BB5601ED9B3FFB61115 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BE949871090B498E1FEB0852 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.eartrainer.EarTrainerTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EarTrainer.app/EarTrainer";
+			};
+			name = Debug;
+		};
+		E650AE0835D890822B184F93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = EarTrainer/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.eartrainer.EarTrainer;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EA2A62D72DEA50373B5DD252 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.eartrainer.EarTrainerUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = EarTrainer;
+			};
+			name = Debug;
+		};
+		EDDFB705A2FD5ECF439A8865 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.eartrainer.EarTrainerTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EarTrainer.app/EarTrainer";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4BA3506F0FB5EA510208692B /* Build configuration list for PBXProject "EarTrainer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8FBA2BB5601ED9B3FFB61115 /* Debug */,
+				33E8C632974BD92858B96CDA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5CA7E34879E1983AC9FE5B68 /* Build configuration list for PBXNativeTarget "EarTrainerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EA2A62D72DEA50373B5DD252 /* Debug */,
+				4CF8AD4FF8C33594B84B45C6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B398C2DA46EC5E2A3D7762ED /* Build configuration list for PBXNativeTarget "EarTrainer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E650AE0835D890822B184F93 /* Debug */,
+				717CF372A66D0F8C55193E4C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C1D5558CD4E59084DC712A1F /* Build configuration list for PBXNativeTarget "EarTrainerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE949871090B498E1FEB0852 /* Debug */,
+				EDDFB705A2FD5ECF439A8865 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4DF6E812168D5476E9E3392A /* XCRemoteSwiftPackageReference "AudioKitEX" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AudioKit/AudioKitEX";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.6.0;
+			};
+		};
+		AEC8EA4E88A0E786C2B5415A /* XCRemoteSwiftPackageReference "AudioKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AudioKit/AudioKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		05405D409401F6A9EA4C99DE /* AudioKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AEC8EA4E88A0E786C2B5415A /* XCRemoteSwiftPackageReference "AudioKit" */;
+			productName = AudioKit;
+		};
+		844C613E86EF636D065F5F68 /* AudioKitEX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4DF6E812168D5476E9E3392A /* XCRemoteSwiftPackageReference "AudioKitEX" */;
+			productName = AudioKitEX;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 94AE22CD8F6E558EC3FD290A /* Project object */;
+}

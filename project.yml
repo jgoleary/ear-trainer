@@ -1,0 +1,38 @@
+name: EarTrainer
+options:
+  bundleIdPrefix: com.eartrainer
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "15"
+packages:
+  AudioKit:
+    url: https://github.com/AudioKit/AudioKit
+    from: 5.6.0
+  AudioKitEX:
+    url: https://github.com/AudioKit/AudioKitEX
+    from: 5.6.0
+targets:
+  EarTrainer:
+    type: application
+    platform: iOS
+    sources: EarTrainer
+    info:
+      path: EarTrainer/Info.plist
+      properties:
+        NSMicrophoneUsageDescription: "EarTrainer needs microphone access to grade your singing."
+        UILaunchScreen: {}
+    dependencies:
+      - package: AudioKit
+      - package: AudioKitEX
+  EarTrainerTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: EarTrainerTests
+    dependencies:
+      - target: EarTrainer
+  EarTrainerUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: EarTrainerUITests
+    dependencies:
+      - target: EarTrainer
