@@ -1,4 +1,4 @@
-enum PitchResult {
+enum PitchResult: Equatable {
     case onPitch                // within ±25 cents — the sole in-tune case
     case sharp(cents: Double)   // above target by >25 cents
     case flat(cents: Double)    // below target by >25 cents
