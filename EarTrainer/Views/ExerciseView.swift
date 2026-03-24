@@ -201,16 +201,14 @@ struct ExerciseView: View {
         let releaseSkip = 0.03
         let sampleWindow = windowSeconds - attackSkip - releaseSkip
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + attackSkip) { [weak self] in
-            guard let self else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + attackSkip) {
             self.pitchSamples = []
             let sampleInterval = 0.02
             let sampleCount = Int(sampleWindow / sampleInterval)
             var sampled = 0
 
-            self.noteTimer = Timer.scheduledTimer(withTimeInterval: sampleInterval, repeats: true) { [weak self] timer in
-                Task { @MainActor [weak self] in
-                    guard let self else { timer.invalidate(); return }
+            self.noteTimer = Timer.scheduledTimer(withTimeInterval: sampleInterval, repeats: true) { timer in
+                Task { @MainActor in
                     let freq = self.audioEngine.currentFrequency
                     if freq > 0 { self.pitchSamples.append(freq) }
                     sampled += 1
