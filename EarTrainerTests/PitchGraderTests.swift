@@ -11,10 +11,21 @@ final class PitchGraderTests: XCTestCase {
     }
 
     func test_onPitch_within25Cents() {
-        // 25 cents sharp of A4 (440 Hz)
+        // 25 cents sharp of A4 (440 Hz) — inclusive boundary
         let sharpBy25 = 440.0 * pow(2.0, 25.0 / 1200.0)
         let result = PitchGrader.grade(measured: sharpBy25, target: 440.0)
         XCTAssertTrue(result.isOnPitch)
+    }
+
+    func test_sharp_atBoundary26Cents() {
+        // 26 cents sharp — first value outside the on-pitch window
+        let sharpBy26 = 440.0 * pow(2.0, 26.0 / 1200.0)
+        let result = PitchGrader.grade(measured: sharpBy26, target: 440.0)
+        if case .sharp = result {
+            XCTAssertFalse(result.isOnPitch)
+        } else {
+            XCTFail("Expected .sharp at 26 cents, got \(result)")
+        }
     }
 
     func test_sharp_26to50Cents() {
@@ -45,9 +56,9 @@ final class PitchGraderTests: XCTestCase {
         XCTAssertEqual(result.score, 0.0)
     }
 
-    func test_undetected_scoresZero() {
-        let result = PitchGrader.gradeUndetected()
-        XCTAssertEqual(result.score, 0.0)
+    func test_zeroPitch_returnsUndetected() {
+        let result = PitchGrader.grade(measured: 0, target: 440.0)
+        XCTAssertEqual(result, .undetected)
     }
 
     // MARK: - Phrase scoring
@@ -61,6 +72,18 @@ final class PitchGraderTests: XCTestCase {
         // 1.0 + 0.6 + 0.0 = 1.6 / 3 = 0.533
         let results: [PitchResult] = [.onPitch, .sharp(cents: 35), .undetected]
         XCTAssertEqual(PitchGrader.phraseScore(results), 0.533, accuracy: 0.01)
+    }
+
+    func test_phraseScore_emptyReturnsZero() {
+        XCTAssertEqual(PitchGrader.phraseScore([]), 0.0)
+    }
+
+    func test_lessonScore_average() {
+        XCTAssertEqual(PitchGrader.lessonScore(phraseScores: [1.0, 0.5, 0.75]), 0.75, accuracy: 0.01)
+    }
+
+    func test_lessonScore_emptyReturnsZero() {
+        XCTAssertEqual(PitchGrader.lessonScore(phraseScores: []), 0.0)
     }
 
     // MARK: - Star rating

@@ -2,7 +2,10 @@ import Foundation
 
 enum PitchGrader {
 
+    // MARK: - Grading
+
     static func grade(measured: Double, target: Double) -> PitchResult {
+        guard measured > 0, target > 0 else { return .undetected }
         let cents = 1200.0 * log2(measured / target)
         if abs(cents) <= 25.0 {
             return .onPitch
@@ -13,9 +16,7 @@ enum PitchGrader {
         }
     }
 
-    static func gradeUndetected() -> PitchResult {
-        return .undetected
-    }
+    // MARK: - Aggregation
 
     static func phraseScore(_ results: [PitchResult]) -> Double {
         guard !results.isEmpty else { return 0.0 }
