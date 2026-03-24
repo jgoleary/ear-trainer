@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 final class ProgressStore: ObservableObject {
 
     private let key = "lessonProgress"
@@ -26,9 +27,10 @@ final class ProgressStore: ObservableObject {
     }
 
     func record(lessonID: String, stars: Int) {
+        let clamped = max(0, min(3, stars))   // memberwise init bypasses didSet clamp
         let current = progressByID[lessonID]?.bestStars ?? 0
-        if stars > current {
-            progressByID[lessonID] = LessonProgress(lessonID: lessonID, bestStars: stars)
+        if clamped > current {
+            progressByID[lessonID] = LessonProgress(lessonID: lessonID, bestStars: clamped)
             save()
         }
     }
