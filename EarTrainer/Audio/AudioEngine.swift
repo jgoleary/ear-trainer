@@ -1,7 +1,6 @@
 import AudioKit
 import AudioKitEX
 import AVFoundation
-import Combine
 
 @MainActor
 final class AudioEngine: ObservableObject {
@@ -13,13 +12,15 @@ final class AudioEngine: ObservableObject {
 
     // MARK: - AudioKit nodes
     private let engine = AudioKit.AudioEngine()
-    private var mic: AudioKit.AudioEngine.InputNode!
-    private var pitchTap: PitchTap!
-    private var oscillator: DynamicOscillator!
-    private var mixer: Mixer!
+    private var mic: AudioKit.AudioEngine.InputNode?
+    private var pitchTap: PitchTap?
+    private var oscillator: DynamicOscillator?
+    private var mixer: Mixer?
 
-    // MARK: - Metronome / count-in
-    private var countInTimer: Timer?
+    // MARK: - Playback coordination
+    private var pitchSilenceTask: Task<Void, Never>?
+    private var clickSilenceTask: Task<Void, Never>?
+    private var countInTask: Task<Void, Never>?
 
     // MARK: - Configuration
     private let amplitudeThreshold: Double = 0.1
@@ -32,18 +33,22 @@ final class AudioEngine: ObservableObject {
         }
         mic = inputNode
 
-        oscillator = DynamicOscillator()
-        oscillator.amplitude = 0
+        let osc = DynamicOscillator()
+        osc.amplitude = 0
+        oscillator = osc
 
-        mixer = Mixer(mic, oscillator)
-        engine.output = mixer
+        let mix = Mixer(inputNode, osc)
+        mixer = mix
+        engine.output = mix
 
-        pitchTap = PitchTap(mic) { [weak self] freq, amp in
+        pitchTap = PitchTap(inputNode) { [weak self] freq, amp in
             Task { @MainActor [weak self] in
-                guard let self else { return }
-                if amp[0] > Float(self.amplitudeThreshold) {
-                    self.currentFrequency = Double(freq[0])
-                    self.currentAmplitude = Double(amp[0])
+                guard let self,
+                      let amplitude = amp.first,
+                      let frequency = freq.first else { return }
+                if amplitude > Float(self.amplitudeThreshold) {
+                    self.currentFrequency = Double(frequency)
+                    self.currentAmplitude = Double(amplitude)
                 } else {
                     self.currentFrequency = 0
                     self.currentAmplitude = 0
@@ -52,54 +57,70 @@ final class AudioEngine: ObservableObject {
         }
 
         try engine.start()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleInterruption),
+            name: AVAudioSession.interruptionNotification,
+            object: nil
+        )
     }
 
     // MARK: - Reference pitch playback
 
     /// Plays the given MIDI pitch for `duration` seconds, then stops.
     func playReferencePitch(midiPitch: Int, duration: Double = 1.0) {
+        guard let oscillator else { return }
+        pitchSilenceTask?.cancel()
         let freq = 440.0 * pow(2.0, Double(midiPitch - 69) / 12.0)
         oscillator.frequency = AUValue(freq)
         oscillator.amplitude = 0.5
-        DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
-            self?.oscillator.amplitude = 0
+        pitchSilenceTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(duration))
+            guard !Task.isCancelled else { return }
+            self?.oscillator?.amplitude = 0
         }
     }
 
     // MARK: - Count-in + recording
 
-    /// Plays a single audible click using the oscillator (1000 Hz for 50ms).
     private func playClick() {
+        guard let oscillator else { return }
+        clickSilenceTask?.cancel()
         oscillator.frequency = 1000
         oscillator.amplitude = 0.4
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
-            self?.oscillator.amplitude = 0
+        clickSilenceTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(50))
+            guard !Task.isCancelled else { return }
+            self?.oscillator?.amplitude = 0
         }
     }
 
     /// Plays 4 audible count-in beats, calls `onBeat` for each, then starts recording and calls `onStart`.
     func countInThenRecord(tempoBPM: Int, onBeat: @escaping (Int) -> Void, onStart: @escaping () -> Void) {
         let beatDuration = 60.0 / Double(tempoBPM)
-        var beat = 1
-        countInTimer = Timer.scheduledTimer(withTimeInterval: beatDuration, repeats: true) { [weak self] timer in
-            self?.playClick()
-            onBeat(beat)
-            beat += 1
-            if beat > 4 {
-                timer.invalidate()
-                self?.startRecording()
-                Task { @MainActor in onStart() }
+        countInTask?.cancel()
+        countInTask = Task { @MainActor [weak self] in
+            for beat in 1...4 {
+                guard !Task.isCancelled, let self else { return }
+                self.playClick()
+                onBeat(beat)
+                try? await Task.sleep(for: .seconds(beatDuration))
             }
+            guard !Task.isCancelled, let self else { return }
+            self.startRecording()
+            onStart()
         }
     }
 
     func startRecording() {
+        guard let pitchTap else { return }
         pitchTap.start()
         isRecording = true
     }
 
     func stopRecording() {
-        pitchTap.stop()
+        pitchTap?.stop()
         isRecording = false
         currentFrequency = 0
         currentAmplitude = 0
@@ -108,9 +129,37 @@ final class AudioEngine: ObservableObject {
     // MARK: - Teardown
 
     func stop() {
+        countInTask?.cancel()
+        countInTask = nil
+        pitchSilenceTask?.cancel()
+        pitchSilenceTask = nil
+        clickSilenceTask?.cancel()
+        clickSilenceTask = nil
         stopRecording()
-        countInTimer?.invalidate()
         engine.stop()
+    }
+
+    // MARK: - Audio session interruption
+
+    @objc nonisolated private func handleInterruption(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
+        Task { @MainActor [weak self] in
+            switch type {
+            case .began:
+                self?.stopRecording()
+            case .ended:
+                if let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt {
+                    let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
+                    if options.contains(.shouldResume) {
+                        try? self?.engine.start()
+                    }
+                }
+            @unknown default:
+                break
+            }
+        }
     }
 }
 
