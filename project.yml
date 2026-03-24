@@ -4,6 +4,8 @@ options:
   deploymentTarget:
     iOS: "16.0"
   xcodeVersion: "15"
+settings:
+  SWIFT_VERSION: "5.9"
 packages:
   AudioKit:
     url: https://github.com/AudioKit/AudioKit
