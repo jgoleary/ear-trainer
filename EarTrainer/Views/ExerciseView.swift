@@ -42,7 +42,7 @@ struct ExerciseView: View {
                     notes: currentPhrase.notes,
                     showSolfege: showSolfege,
                     highlightedIndex: currentNoteIndex,
-                    results: phase == .results ? noteResults.map { $0 } : Array(repeating: nil, count: currentPhrase.notes.count)
+                    results: phase == .results ? noteResults : Array(repeating: nil, count: currentPhrase.notes.count)
                 )
                 .padding(.horizontal)
             }
@@ -125,7 +125,9 @@ struct ExerciseView: View {
         VStack(spacing: 16) {
             PitchIndicatorView(
                 measuredFrequency: audioEngine.currentFrequency,
-                targetFrequency: currentNoteIndex.map { currentPhrase.notes[$0].frequency } ?? 0
+                targetFrequency: currentNoteIndex.flatMap {
+                    $0 < currentPhrase.notes.count ? currentPhrase.notes[$0].frequency : nil
+                } ?? 0
             )
             Text("Sing!")
                 .font(.title2.bold())
@@ -176,7 +178,7 @@ struct ExerciseView: View {
         audioEngine.countInThenRecord(tempoBPM: currentPhrase.tempoBPM) { beat in
             Task { @MainActor in self.beatCount = beat }
         } onStart: {
-            self.beginRecording()
+            Task { @MainActor in self.beginRecording() }
         }
     }
 
@@ -199,22 +201,25 @@ struct ExerciseView: View {
         let releaseSkip = 0.03
         let sampleWindow = windowSeconds - attackSkip - releaseSkip
 
-        // Skip attack, then collect samples, then advance
-        DispatchQueue.main.asyncAfter(deadline: .now() + attackSkip) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + attackSkip) { [weak self] in
+            guard let self else { return }
             self.pitchSamples = []
-            let sampleInterval = 0.02  // 50 Hz sample rate
+            let sampleInterval = 0.02
             let sampleCount = Int(sampleWindow / sampleInterval)
             var sampled = 0
 
-            self.noteTimer = Timer.scheduledTimer(withTimeInterval: sampleInterval, repeats: true) { timer in
-                let freq = self.audioEngine.currentFrequency
-                if freq > 0 { self.pitchSamples.append(freq) }
-                sampled += 1
-                if sampled >= sampleCount {
-                    timer.invalidate()
-                    self.gradeCurrentNote(noteIndex: noteIndex, targetNote: note)
-                    self.currentNoteIndex = noteIndex + 1
-                    self.scheduleNoteAdvance(noteIndex: noteIndex + 1)
+            self.noteTimer = Timer.scheduledTimer(withTimeInterval: sampleInterval, repeats: true) { [weak self] timer in
+                Task { @MainActor [weak self] in
+                    guard let self else { timer.invalidate(); return }
+                    let freq = self.audioEngine.currentFrequency
+                    if freq > 0 { self.pitchSamples.append(freq) }
+                    sampled += 1
+                    if sampled >= sampleCount {
+                        timer.invalidate()
+                        self.gradeCurrentNote(noteIndex: noteIndex, targetNote: note)
+                        self.currentNoteIndex = noteIndex + 1
+                        self.scheduleNoteAdvance(noteIndex: noteIndex + 1)
+                    }
                 }
             }
         }
@@ -229,6 +234,7 @@ struct ExerciseView: View {
             let avg = validSamples.reduce(0, +) / Double(validSamples.count)
             result = PitchGrader.grade(measured: avg, target: targetNote.frequency)
         }
+        guard noteIndex < noteResults.count else { return }
         noteResults[noteIndex] = result
     }
 
@@ -244,7 +250,7 @@ struct ExerciseView: View {
         noteResults = []
         pitchSamples = []
         currentNoteIndex = nil
-        phraseScores.removeLast()
+        if !phraseScores.isEmpty { phraseScores.removeLast() }
         audioEngine.playReferencePitch(midiPitch: 60)
         phase = .preview
     }
