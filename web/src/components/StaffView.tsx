@@ -51,7 +51,7 @@ function indicatorColor(result: PitchResult): string {
     case 'onPitch': return '#34c759';
     case 'sharp':
     case 'flat': {
-      const c = result.cents;
+      const c = Math.abs(result.cents);
       if (c < 51) return '#ffcc00';
       if (c < 101) return '#ff9500';
       return '#ff3b30';
