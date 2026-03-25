@@ -27,15 +27,6 @@ struct ExerciseView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            // Solfege toggle
-            HStack {
-                Spacer()
-                Toggle("Solfege", isOn: $showSolfege)
-                    .toggleStyle(.button)
-                    .font(.caption)
-            }
-            .padding(.horizontal)
-
             // Staff
             ScrollView(.horizontal, showsIndicators: false) {
                 StaffView(
@@ -65,6 +56,13 @@ struct ExerciseView: View {
         }
         .navigationTitle("Exercise \(currentPhraseIndex + 1) of \(lesson.phrases.count)")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Toggle("Solfège", isOn: $showSolfege)
+                    .toggleStyle(.button)
+                    .font(.caption)
+            }
+        }
         .task { await setupAudio() }
         .onDisappear { audioEngine.stop() }
         .onChange(of: scenePhase) { newPhase in

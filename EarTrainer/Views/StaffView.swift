@@ -13,14 +13,24 @@ struct StaffView: View {
     private let noteSpacing: CGFloat = 60
 
     var body: some View {
-        Canvas { ctx, size in
-            drawStaff(ctx: ctx, size: size)
-            drawTrebleClef(ctx: ctx, size: size)
-            for (i, note) in notes.enumerated() {
-                drawNote(ctx: ctx, size: size, note: note, index: i)
+        ZStack(alignment: .topLeading) {
+            Canvas { ctx, size in
+                drawStaff(ctx: ctx, size: size)
+                for (i, note) in notes.enumerated() {
+                    drawNote(ctx: ctx, size: size, note: note, index: i)
+                }
             }
+            .frame(width: staffWidth, height: canvasHeight)
+
+            // Rendered outside Canvas so iOS font fallback finds the glyph
+            Text("𝄞")
+                .font(.system(size: 60))
+                .offset(x: 4, y: staffTopY - 12)
         }
-        .frame(height: canvasHeight)
+    }
+
+    private var staffWidth: CGFloat {
+        staffLeftPad + CGFloat(max(notes.count, 1)) * noteSpacing + noteSpacing / 2
     }
 
     private var canvasHeight: CGFloat {
