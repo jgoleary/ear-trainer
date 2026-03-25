@@ -5,6 +5,10 @@ import { Lesson } from '../types';
 
 const STORAGE_KEY = 'lessonProgress';
 
+function clampStars(stars: number): number {
+  return Math.max(0, Math.min(3, stars));
+}
+
 type ProgressMap = Record<string, { lessonId: string; bestStars: number }>;
 
 // --- Pure store factory (used in tests) ---
@@ -31,7 +35,7 @@ export function makeProgressStore(): ProgressStore {
   }
 
   function record(lessonId: string, stars: number): void {
-    const clamped = Math.max(0, Math.min(3, stars));
+    const clamped = clampStars(stars);
     const current = bestStars(lessonId);
     if (clamped > current) {
       state = { ...state, [lessonId]: { lessonId, bestStars: clamped } };
@@ -73,7 +77,7 @@ function loadInitialState(): ProgressState {
 
 function progressReducer(state: ProgressState, action: ProgressAction): ProgressState {
   if (action.type === 'record') {
-    const clamped = Math.max(0, Math.min(3, action.stars));
+    const clamped = clampStars(action.stars);
     const current = state.progressMap[action.lessonId]?.bestStars ?? 0;
     if (clamped <= current) return state;
     const next: ProgressState = {
