@@ -31,7 +31,10 @@ export function LessonCardView({ lesson, stars, isUnlocked, onClick }: LessonCar
           overflow: 'hidden',
           textOverflow: 'ellipsis',
         }}>
-          {lesson.title}
+          {lesson.title}{' '}
+          <span style={{ fontSize: 11, color: '#8e8e93', textTransform: 'capitalize' }}>
+            {lesson.difficulty}
+          </span>
         </div>
         <div style={{
           fontSize: 12,
@@ -45,17 +48,9 @@ export function LessonCardView({ lesson, stars, isUnlocked, onClick }: LessonCar
         </div>
       </div>
       <div style={{ marginLeft: 12, flexShrink: 0 }}>
-        {isUnlocked ? (
-          <div style={{ display: 'flex', gap: 2 }}>
-            {[1, 2, 3].map(i => (
-              <span key={i} style={{ fontSize: 12, color: '#ffcc00' }}>
-                {i <= stars ? '★' : '☆'}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <span style={{ fontSize: 14, color: '#8e8e93' }}>🔒</span>
-        )}
+        <span style={{ fontSize: 14, color: '#ffcc00' }}>
+          {isUnlocked ? '★'.repeat(stars) + '☆'.repeat(3 - stars) : '🔒'}
+        </span>
       </div>
     </div>
   );
