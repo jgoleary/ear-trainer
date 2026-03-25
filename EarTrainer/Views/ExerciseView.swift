@@ -173,10 +173,14 @@ struct ExerciseView: View {
     private func startCountIn() {
         phase = .countIn
         beatCount = 0
-        audioEngine.countInThenRecord(tempoBPM: currentPhrase.tempoBPM) { beat in
-            Task { @MainActor in self.beatCount = beat }
-        } onStart: {
-            Task { @MainActor in self.beginRecording() }
+        audioEngine.playReferencePitch(midiPitch: 60, duration: 1.0)
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1.0))
+            audioEngine.countInThenRecord(tempoBPM: currentPhrase.tempoBPM) { beat in
+                Task { @MainActor in self.beatCount = beat }
+            } onStart: {
+                Task { @MainActor in self.beginRecording() }
+            }
         }
     }
 
