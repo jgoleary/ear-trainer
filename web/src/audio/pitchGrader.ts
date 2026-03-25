@@ -3,7 +3,7 @@ import { PitchResult, pitchResultScore } from '../types';
 export function grade(measured: number, target: number): PitchResult {
   if (measured <= 0 || target <= 0) return { kind: 'undetected' };
   const cents = 1200 * Math.log2(measured / target);
-  if (Math.abs(cents) < 25.5) return { kind: 'onPitch' };
+  if (Math.abs(cents) <= 25.0001) return { kind: 'onPitch' };
   if (cents > 0) return { kind: 'sharp', cents };
   return { kind: 'flat', cents: Math.abs(cents) };
 }
