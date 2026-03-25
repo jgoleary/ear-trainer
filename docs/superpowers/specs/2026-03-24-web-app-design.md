@@ -19,7 +19,7 @@ ear-trainer/
 │   │   │   ├── pitchGrader.ts       # pure functions: grade(), phraseScore(), lessonScore(), stars()
 │   │   │   └── audioEngine.ts       # Web Audio API wrapper (oscillator + mic + pitch detection)
 │   │   ├── store/
-│   │   │   └── progressStore.ts     # localStorage-backed progress (mirrors ProgressStore.swift)
+│   │   │   └── progressStore.ts     # localStorage-backed progress
 │   │   └── components/
 │   │       ├── LessonBrowserView.tsx
 │   │       ├── LessonCardView.tsx
@@ -39,14 +39,18 @@ ear-trainer/
 
 ## Data Model
 
-### Types (mirrors Swift models)
+### Types
 
 ```ts
+// frequency is a computed helper, not stored in curriculum data
+function midiToFreq(midi: number): number {
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
+
 interface Note {
   solfege: string;
   midiPitch: number;
   durationBeats: number;
-  frequency: number;  // 440 * 2^((midi-69)/12)
 }
 
 interface Phrase {
@@ -69,13 +73,15 @@ type PitchResult =
   | { kind: 'undetected' };
 ```
 
+`frequency` is not stored in the `Note` object — it is computed on demand via `midiToFreq(note.midiPitch)`, mirroring the Swift computed property.
+
 ### `curriculum.ts`
 
 Exports `const curriculum: Lesson[]` — all 14 lessons with identical MIDI pitches and phrase structures as `LessonCurriculum.swift`.
 
 ### `progressStore.ts`
 
-Wraps `localStorage` key `"eartrainer_progress"` (JSON: `Record<string, { lessonId: string; bestStars: number }>`).
+Wraps `localStorage` key `"lessonProgress"` (same key as iOS `ProgressStore.swift`) with JSON value `Record<string, { lessonId: string; bestStars: number }>`.
 
 Public API:
 - `bestStars(lessonId: string): number`
@@ -86,15 +92,13 @@ Uses a React context + `useReducer` for reactivity — components subscribe to p
 
 ## Audio Engine (`audioEngine.ts`)
 
-Wraps the Web Audio API. Public interface mirrors `AudioEngine.swift`:
+Wraps the Web Audio API. Public interface mirrors `AudioEngine.swift`, with one intentional difference: `setup()` is `async` because `getUserMedia` is a Promise on the web (iOS requests permission separately via `AVCaptureDevice.requestAccess`).
 
 ```ts
 class AudioEngine {
-  currentFrequency: number   // reactive via callback
-  currentAmplitude: number
-  isRecording: boolean
+  onFrequencyChange: (freq: number, amp: number) => void  // callback, not property
 
-  async setup(): Promise<void>          // requests mic, builds graph
+  async setup(): Promise<void>   // calls getUserMedia, builds audio graph, throws on denial
   playReferencePitch(midiPitch: number, duration?: number): void
   countInThenRecord(bpm: number, onBeat: (n: number) => void, onStart: () => void): void
   startRecording(): void
@@ -104,14 +108,16 @@ class AudioEngine {
 ```
 
 **Audio graph:**
-- Microphone → `AnalyserNode` → `pitchy` (via `requestAnimationFrame` loop during recording)
+- Microphone → `AnalyserNode` (fftSize: 2048) → pitchy during recording
 - `OscillatorNode` (type: `sine`) → `GainNode` → destination (reference pitch + clicks)
 
-**Pitch detection:** On each animation frame during recording, reads a `Float32Array` from the `AnalyserNode`, passes it to `pitchy`'s `PitchDetector.forFloat32Array()`. If amplitude exceeds 0.1, publishes the detected frequency via callback. Otherwise publishes 0.
+**Pitch detection:** During recording, a `requestAnimationFrame` loop reads a 2048-sample `Float32Array` from the `AnalyserNode` and passes it to `pitchy`'s `PitchDetector.forFloat32Array(2048, audioContext.sampleRate)`. If the RMS amplitude of the buffer exceeds 0.1, fires `onFrequencyChange(detectedHz, amplitude)`; otherwise fires `onFrequencyChange(0, 0)`.
 
-**Count-in:** `setTimeout`-based loop (same logic as `Task.sleep` in Swift) — fires 4 times at `60000/bpm` ms intervals, plays a 1000Hz click (50ms), calls `onBeat`, then calls `onStart` and begins recording.
+**Count-in timing:** `countInThenRecord` is responsible only for the 4 click beats — it does NOT play the reference Do. The caller (`ExerciseView.startCountIn`) plays Do first (1 second), waits 1 second, then calls `countInThenRecord`. This matches the iOS split where `AudioEngine.countInThenRecord` only handles clicks and the view layer is responsible for the preceding Do playback.
 
-**Reference pitch interruption:** Uses a cancellation token (stored `timeoutId`) to cancel a pending silence, same as `pitchSilenceTask` in Swift.
+**Count-in implementation:** `setTimeout`-based loop — fires 4 times at `60000/bpm` ms intervals, plays a 1000Hz click (50ms via `GainNode`), calls `onBeat(beat)`, then on beat 5 calls `startRecording()` and `onStart()`.
+
+**Reference pitch cancellation:** Uses a stored `timeoutId` to cancel the pending silence when `playReferencePitch` is called again before the previous duration expires (mirrors `pitchSilenceTask` in Swift).
 
 ## Pitch Grader (`pitchGrader.ts`)
 
@@ -133,50 +139,60 @@ Same constants: ±25¢ on-pitch tolerance, score weights 1.0/0.6/0.3/0.0, star t
 `<canvas>` element sized to `staffWidth × canvasHeight`. Drawing logic is a direct translation of `StaffView.swift`:
 - Same slot map: `{ 60: -2, 62: -1, 64: 0, 65: 1, 67: 2, 69: 3, 71: 4, 72: 5 }`
 - Same coordinate system: `staffTopY = 40`, `lineSpacing = 10`, `noteSpacing = 60`, `staffLeftPad = 50`
-- Treble clef rendered as an absolutely-positioned `<span>` overlay (same fix as iOS — font fallback works outside Canvas)
+- `staffWidth = staffLeftPad + notes.length * noteSpacing + noteSpacing / 2`
+- Treble clef rendered as an absolutely-positioned `<span>` overlay (font fallback works outside canvas)
 - Re-renders on prop changes via `useEffect` watching `[notes, highlightedIndex, results, showSolfege]`
+
+Props: `notes: Note[]`, `showSolfege: boolean`, `highlightedIndex: number | null`, `results: (PitchResult | null)[]`.
 
 ### `ExerciseView.tsx`
 
 Three-phase state machine: `preview | countIn | recording | results | lessonComplete`.
 
-- On mount: calls `audioEngine.setup()`, plays reference Do
-- **preview:** "Sing" button → `startCountIn()`
-- **countIn:** plays Do, waits 1s, then 4 clicks with beat indicator
-- **recording:** `PitchIndicatorView` showing live pitch; note-window timer grading each note
-- **results:** phrase score + "Try Again" / "Next" buttons
+- On mount: calls `audioEngine.setup()`, plays reference Do (MIDI 60, always C4 regardless of lesson)
+- **preview:** "Sing" button + solfège toggle in header → `startCountIn()`
+- **startCountIn():** sets phase to `countIn`, plays Do (MIDI 60) for 1s, waits 1s, then calls `audioEngine.countInThenRecord()`
+- **countIn:** beat indicator (4 dots lighting up with each click)
+- **recording:** `PitchIndicatorView` with live pitch; per-note window sampling (see below)
+- **results:** phrase score + "Try Again" / "Next Exercise" or "Finish" buttons
 - **lessonComplete:** navigates to `LessonResultView`
 
-Page visibility change (`visibilitychange` event) mirrors the iOS `scenePhase` background handler — resets to preview if recording is interrupted.
+**Per-note window sampling** (mirrors iOS `scheduleNoteAdvance`):
+- For each note, skip 50ms attack, then sample `currentFrequency` every 20ms for `(noteDurationSeconds - 0.05 - 0.03)` seconds
+- Average all non-zero samples; grade the average via `pitchGrader.grade(avg, midiToFreq(note.midiPitch))`
+- On "Try Again": reset `noteResults`, remove the last entry from `phraseScores`, replay reference Do, return to preview
+
+Page visibility change (`document.addEventListener('visibilitychange')`) resets to preview if recording is interrupted, discarding the in-progress attempt without saving a score.
+
+**Solfège toggle:** Checkbox in the exercise header (not the nav bar, since web has no native nav bar toolbar).
 
 ### `LessonBrowserView.tsx`
 
-Reads progress from context. Renders 14 `LessonCardView` items. Locked lessons are non-interactive (opacity 0.5).
+Reads progress from context. Renders 14 `LessonCardView` items. Locked lessons are non-interactive (opacity 0.5, no click handler).
 
 ### `LessonResultView.tsx`
 
-Displays stars, average score, "Try Again" / "Next Lesson". Calls `progressStore.record()` on mount.
+Displays stars, average score. "Try Again" always shown. "Next Lesson" shown **only when `stars === 3`** (same condition as iOS). Calls `progressStore.record()` on mount.
 
 ## Routing
 
 React Router v6:
 - `/` → `LessonBrowserView`
-- `/lesson/:id` → `ExerciseView`
-- `/lesson/:id/result` → `LessonResultView` (or modal from ExerciseView)
+- `/lesson/:id` → `ExerciseView` (renders `LessonResultView` as a full-screen overlay when `lessonComplete`)
 
 ## Progress Persistence
 
-`localStorage` key `"eartrainer_progress"`. Same unlock logic: lesson-01 always unlocked; subsequent lessons require 3 stars on the previous lesson. Stars clamped to 0–3, only written if new value exceeds stored best.
+`localStorage` key `"lessonProgress"` (matches iOS). Unlock logic: `lesson-01` always unlocked; subsequent lessons require 3 stars on the previous lesson. Stars clamped to 0–3, only written if new value exceeds stored best.
 
 ## Error Handling
 
-- Mic permission denied: alert with link to browser settings (same as iOS)
-- `getUserMedia` not supported: show message directing user to a supported browser (Chrome/Firefox/Safari 14.1+)
-- Pitch detection returns no pitch for a full note window: grades as `.undetected` (score 0)
+- `getUserMedia` denied: show inline message with instructions to allow mic in browser settings
+- `getUserMedia` not supported: show message directing user to Chrome, Firefox, or Safari 14.1+
+- Pitch detection returns no pitch for a full note window: grades as `{ kind: 'undetected' }` (score 0)
 
 ## Testing Strategy
 
-- `pitchGrader.ts` — unit tests with Vitest (same test cases as `PitchGraderTests.swift`)
-- `curriculum.ts` — unit tests verifying 14 lessons, 10 phrases each, correct MIDI values for lesson 1
-- `progressStore.ts` — unit tests with a mocked `localStorage`
-- Components — no automated tests; manual testing in browser mirrors Task 13 checklist
+- `pitchGrader.ts` — Vitest unit tests (same test cases as `PitchGraderTests.swift`)
+- `curriculum.ts` — Vitest unit tests verifying 14 lessons, 10 phrases each, correct MIDI values for lesson 1
+- `progressStore.ts` — Vitest unit tests with mocked `localStorage`
+- Components — manual browser testing using the iOS Task 13 checklist as a guide
